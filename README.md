@@ -27,13 +27,13 @@ PROGRAM: [==========]  102.4% (used 1341988 bytes from 1310720 bytes)
  ```
  It is necessary to change ESP32 partition table. For example:
 - ~/.platformio/packages/framework-arduinoespressif32/tools/partitions/default.csv
-> #Name,   Type, SubType, Offset,  Size, Flags
-> nvs,      data, nvs,     0x9000,  0x5000,
-> otadata,  data, ota,     0xe000,  0x2000,
-> app0,     app,  ota_0,   0x10000, 0x180000,
-> app1,     app,  ota_1,   0x190000,0x180000,
-> eeprom,   data, 0x99,    0x310000,0x1000,
-> spiffs,   data, spiffs,  0x311000,0xEF000,
+> #Name,   Type, SubType, Offset,  Size, Flags<br>
+> nvs,      data, nvs,     0x9000,  0x5000,<br>
+> otadata,  data, ota,     0xe000,  0x2000,<br>
+> app0,     app,  ota_0,   0x10000, 0x180000,<br>
+> app1,     app,  ota_1,   0x190000,0x180000,<br>
+> eeprom,   data, 0x99,    0x310000,0x1000,<br>
+> spiffs,   data, spiffs,  0x311000,0xEF000,<br>
 
 - ~/.platformio/packages/framework-arduinoespressif32/boards.txt
 > esp32.upload.maximum_size=1572864
