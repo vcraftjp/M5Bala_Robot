@@ -11,11 +11,12 @@ static int waveIndex = -1;
 static int waveLength;
 static int writeBytes;
 static int totalBytes;
-static const uint8_t **waveDataArray = NULL;
-static const uint16_t *waveDataSizeArray = NULL;
+static bool _isMute; // = false;
+static const uint8_t **waveDataArray; // = NULL;
+static const uint16_t *waveDataSizeArray; // = NULL;
 
 static volatile SemaphoreHandle_t timerSemaphore;
-static hw_timer_t *timer = NULL;
+static hw_timer_t *timer; // = NULL;
 
 void IRAM_ATTR onTimer() {
 	if (waveIndex >= 0) {
@@ -40,7 +41,11 @@ void IRAM_ATTR onTimer() {
 }
 
 void Audio::setVolume(int _volume) {
-	volume = min(_volume, 10);
+	volume = min(_volume, MAX_VOLUME);
+}
+
+int Audio::getVolume() {
+	return volume;
 }
 
 void Audio::setSampleRate(int _sampleRate) {
@@ -62,6 +67,7 @@ void Audio::init() {
 }
 
 void Audio::play(const uint8_t *_wave, int _length, int _duration) {
+	if (_isMute) return;
 	wave = _wave;
 	waveLength = _length;
 	waveIndex = 0;
@@ -78,6 +84,21 @@ void Audio::play(const uint8_t *_wave, int _length, int _duration) {
 void Audio::stop() {
 	waveIndex = -1;
 	M5.Speaker.write(0);
+}
+
+bool Audio::isPlaying() {
+	return waveIndex != -1;
+}
+
+void Audio::setMute(bool b) {
+	_isMute = b;
+	if (isPlaying()) {
+		stop();
+	}
+}
+
+bool Audio::isMute() {
+	return _isMute;
 }
 
 void Audio::setWaveData(const uint8_t **_waveDataArray, const uint16_t *_waveDataSizeArray) {

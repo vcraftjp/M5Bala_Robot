@@ -117,6 +117,8 @@ enum RoboState {
 // int16_t tl_demo[] = { 1000, ROBO_TILT_DOWN, 3000, ROBO_STANDBY, 1000, ROBO_FIND, 5000, ROBO_FIND_END, 500, ROBO_RUN_TURN, 2500, ROBO_FORWARD, 3000, ROBO_STOP, 0 };
 // int16_t tl_rotate[] = { 2000, ROBO_ROTATE180, TL_INFINITY, ROBO_STOP, 0 };
 
+int16_t tl_forward[] = { 500, ROBO_FORWARD, 4000, ROBO_STOP, 0 };
+
 int16_t tl_findHuman[] = { 2000, TILT_UP, ROBO_FIND_HUMAN, TL_INFINITY,
 	ROBO_NOT_FOUND, TILT_DOWN, PLAY(R2D2_SAD), TL_END,
 	ROBO_FOUND, ROBO_STARE_EYES, PLAY(R2D2_PLAYFUL), 2000, ROBO_RESET_EYES, 0 };
@@ -492,7 +494,8 @@ void loop() {
 
 		if (timeline.state == 0) {
 			if (M5.BtnA.wasPressed()) {
-				timeline.begin(tl_findHuman);
+//				timeline.begin(tl_findHuman);
+				timeline.begin(tl_forward);
 			} else if (M5.BtnB.wasPressed()) {
 				timeline.begin(tl_runOnFloor);
 			} else if (M5.BtnC.wasPressed()) {

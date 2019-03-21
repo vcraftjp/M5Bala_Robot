@@ -21,12 +21,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef _M5BALA_H
-#define _M5BALA_H
+#pragma once
 
-#include "Arduino.h"
-#include "Wire.h"
-#include "MPU6050_tockn.h"
+#include <M5Stack.h>
+#include <MPU6050_tockn.h>
 
 #define MOTOR_RPM           150
 #define MAX_PWM             255
@@ -36,19 +34,22 @@
 #define MOTOR_CTRL_ADDR     0x00
 #define ENCODER_ADDR        0x04
 
-enum State { STOP, RUN, WAKE_UP };
+class Preferences;
 
 class M5Bala {
 	public:
 		M5Bala();
 		M5Bala(TwoWire &w);
 
-		void begin();
+		void begin(bool isBalance = true, bool useIMU = true);
 		bool run();
 		void PIDCompute();
 		void setMotor(int16_t pwm0, int16_t pwm1);
 		bool readEncder();
 		uint8_t i2c_readByte(uint8_t address, uint8_t subAddress);
+
+		void autoTuneGyroOffset(Preferences& prefs);
+		void setGyroOffsets(Preferences& prefs);
 
 		void setAngleOffset(float offset) { angle_offset = offset; };
 		float getAngle() { return pitch; };
@@ -63,16 +64,23 @@ class M5Bala {
 
 		// control
 		void stop();
-		void move(int16_t speed, uint16_t duration = 0);
-		void turn(int16_t speed, uint16_t duration = 0);
-		void rotate(int16_t speed, uint16_t duration = 0);
+		void move(int16_t speed, int duration = 0);
+		void turn(int16_t speed, int duration = 0);
+		void rotate(int16_t speed, int duration = 0);
+		void setAutoStraight(float speedWeight = 1.0, float encoderGain = 0.5);
+		void startRotate() { sumOfSpeedDiff = 0; }
+		int getRotateAngle();
 
 		void wakeUp();
 		void shutdown();
-		State getState() { return state; }
 		int getError() { return (int)wireError; }
 
+		bool isBalance;
+		bool isTumbled;
+
 	private:
+		enum State { STOP, RUN, WAKE_UP };
+
 		TwoWire *wire;
 		float yaw, pitch, roll;
 		int16_t speed_input0, speed_input1;
@@ -84,6 +92,13 @@ class M5Bala {
 
 		uint8_t wireError;
 		State state;
-};
+		float encoderGain; // encoder filter
+		unsigned long startTick;
+		int duration;
 
-#endif
+		bool isMoveStraight;
+		float speedWeight;
+		int sumOfSpeedDiff;
+
+		void setDuration(int duration);
+};
